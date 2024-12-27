@@ -1,0 +1,15 @@
+ARG GO_VERSION=1.22.3
+
+FROM golang:${GO_VERSION}-alpine as builder
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN GOOS=linux GOARCH=amd64 go build -o pace-keeper
+
+FROM --platform=linux/amd64 alpine:latest
+WORKDIR /root
+COPY --from=builder /app/luaScripts ./luaScripts
+COPY --from=builder /app/pace-keeper .
+EXPOSE 8080
+CMD ["./pace-keeper"]

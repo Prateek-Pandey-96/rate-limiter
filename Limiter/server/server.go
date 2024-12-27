@@ -15,7 +15,7 @@ func initializeRoutes(dependency *config.Dependency) {
 
 	dependency.Router.Any("/limit/*proxyPath",
 		middleware.LimitingMiddleware(dependency),
-		// middleware.GetResponse(dependency))
+		middleware.GetResponse(dependency),
 	)
 
 }

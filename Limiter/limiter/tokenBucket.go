@@ -20,7 +20,7 @@ func (tb *TokenBucket) Init(ctx context.Context, client *redis.Client) {
 }
 
 func (tb *TokenBucket) IsRateLimited(domain string, limit int) (bool, error) {
-	key := fmt.Sprintf("domain_key:token_bucket:%s", domain)
+	key := fmt.Sprintf("token_bucket:%s", domain)
 
 	scriptContent, err := os.ReadFile("./luaScripts/tokenBucket.lua")
 	if err != nil {

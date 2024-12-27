@@ -20,9 +20,8 @@ func (rc *RollingWindow) Init(ctx context.Context, client *redis.Client) {
 }
 
 func (rc *RollingWindow) IsRateLimited(domain string, limit int) (bool, error) {
-	key := fmt.Sprintf("domain_key:rolling_window:%s", domain)
+	key := fmt.Sprintf("rolling_window:%s", domain)
 	intervalMicroSec := 1e6
-
 	scriptContent, err := os.ReadFile("./luaScripts/rollingWindow.lua")
 	if err != nil {
 		return false, err

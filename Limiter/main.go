@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"github.com/Prateek-Pandey-96/config"
 	"github.com/Prateek-Pandey-96/limiter"
@@ -22,10 +23,28 @@ func main() {
 
 	dependency := &config.Dependency{
 		Router:              gin.Default(),
-		Limits:              map[string]int{},
+		Limits:              pollLimits(),
 		RollingWindowClient: rollingWindowClient,
 		TokenBucketClient:   tokenBucketClient,
 	}
 
+	go updateLimits(dependency, 15*time.Minute)
 	server.StartServer(dependency)
+}
+
+func updateLimits(dependency *config.Dependency, duration time.Duration) {
+	ticker := time.NewTicker(duration)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		dependency.Limits = pollLimits()
+	}
+}
+
+func pollLimits() map[string]int {
+	// api call can be plugged here for updating limits can be added here
+	return map[string]int{
+		"param_value_1": 50,
+		"param_value_2": 100,
+	}
 }

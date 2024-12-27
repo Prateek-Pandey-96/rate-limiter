@@ -1,10 +1,11 @@
 import requests
 
 # URL of the local endpoint
-url = 'http://localhost:3131/verify'
+# For testing it hits the helath check endpoint of the rate limiter itself
+url = 'http://localhost:8080/limit/extra?qpm=param_value_1'
 
-# Send 60 requests
-for i in range(61):
+# Send requests
+for i in range(77):
     try:
         response = requests.get(url)
         print(f"Request {i+1}: Status Code: {response.status_code}")
