@@ -3,24 +3,29 @@ package main
 import (
 	"context"
 
-	"github.com/Prateek-Pandey-96/cache"
 	"github.com/Prateek-Pandey-96/config"
+	"github.com/Prateek-Pandey-96/limiter"
+	"github.com/Prateek-Pandey-96/redis"
+	"github.com/Prateek-Pandey-96/server"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	r := gin.Default()
+	var rollingWindowClient limiter.Limiter = &limiter.RollingWindow{}
+	var tokenBucketClient limiter.Limiter = &limiter.TokenBucket{}
 
-	var cacheClient cache.ICache = &cache.RedisClient{}
 	ctx := context.Background()
+	redisClient := redis.GetRedisClient(ctx)
 
-	cacheClient.Init(ctx)
+	rollingWindowClient.Init(ctx, redisClient)
+	tokenBucketClient.Init(ctx, redisClient)
 
 	dependency := &config.Dependency{
-		Engine:      r,
-		CacheClient: cacheClient,
+		Router:              gin.Default(),
+		Limits:              map[string]int{},
+		RollingWindowClient: rollingWindowClient,
+		TokenBucketClient:   tokenBucketClient,
 	}
 
-	InitializeRoutes(dependency)
-	Serve(dependency)
+	server.StartServer(dependency)
 }

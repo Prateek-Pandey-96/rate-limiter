@@ -1,11 +1,13 @@
 package config
 
 import (
-	"github.com/Prateek-Pandey-96/cache"
+	"github.com/Prateek-Pandey-96/limiter"
 	"github.com/gin-gonic/gin"
 )
 
 type Dependency struct {
-	Engine      *gin.Engine
-	CacheClient cache.ICache
+	Router              *gin.Engine
+	Limits              map[string]int
+	RollingWindowClient limiter.Limiter
+	TokenBucketClient   limiter.Limiter
 }
